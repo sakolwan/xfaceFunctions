@@ -1,5 +1,5 @@
 ultralytics==8.0.142
 opencv-python==4.8.0.74
 cvzone==1.5.6
-pandas==2.0.3
 numpy==1.25.1
+supervision==0.12.0

@@ -42,32 +42,30 @@ def parse_arguments() -> argparse.Namespace:
 
 # polygon zone
 ZONE_POLYGON = np.array([
-    [1725, 1550],
-    [2725, 1550],
-    [3500, 2160],
-    [1250, 2160]
+    [450, 250],
+    [700, 250],
+    [770, 550],
+    [100, 550]
 ])
-# video_info = sv.VideoInfo.from_video_path(MALL_VIDEO_PATH)  # Use path of video
-# zone = sv.PolygonZone(polygon=polygon, frame_resolution_wh=video_info.resolution_wh)
-
 
 def main():
     args = parse_arguments()
     frame_width, frame_height = args.camera_resolution
 
-    # cap = cv2.VideoCapture('Videos/cars.mp4')  # Video
-    cap = cv2.VideoCapture(0)  # Camera
+    cap = cv2.VideoCapture('Videos/cars.mp4')  # Video
+    # cap = cv2.VideoCapture(0)  # Camera
     cap.set(cv2.CAP_PROP_FRAME_WIDTH, frame_width)
     cap.set(cv2.CAP_PROP_FRAME_HEIGHT, frame_height)
 
-    # zone = sv.PolygonZone(polygon=ZONE_POLYGON, frame_resolution_wh=tuple(args.camera_resolution))
-    # zone_annotator = sv.PolygonZoneAnnotator(zone=zone, color=sv.Color.white())
+    zone = sv.PolygonZone(polygon=ZONE_POLYGON, frame_resolution_wh=tuple(args.camera_resolution))
+    zone_annotator = sv.PolygonZoneAnnotator(zone=zone, color=sv.Color.red())
     while True:
         ret, frame = cap.read()
+        frame = zone_annotator.annotate(scene=frame)
         if not ret:
             break
         results = model(frame, stream=True)
-        # frame = zone_annotator.annotate(scene=frame)
+        frame = zone_annotator.annotate(scene=frame)
         for r in results:
             boxes = r.boxes
             for box in boxes:

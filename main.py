@@ -4,13 +4,10 @@ import math
 import argparse
 import numpy as np
 import supervision as sv
-# import pandas as pd
-# import torch
-# import time
 
 from ultralytics import YOLO
 
-model = YOLO('Yolo-Weights/yolov8n.pt')
+model = YOLO('Yolo-Weights/yolov8n-face.pt')
 
 def Display(event, x, y, flags, param):
     if event == cv2.EVENT_MOUSEMOVE:
@@ -52,20 +49,20 @@ def main():
     args = parse_arguments()
     frame_width, frame_height = args.camera_resolution
 
-    cap = cv2.VideoCapture('Videos/cars.mp4')  # Video
-    # cap = cv2.VideoCapture(0)  # Camera
+    # cap = cv2.VideoCapture('Videos/cars.mp4')  # Video
+    cap = cv2.VideoCapture(0)  # Camera
     cap.set(cv2.CAP_PROP_FRAME_WIDTH, frame_width)
     cap.set(cv2.CAP_PROP_FRAME_HEIGHT, frame_height)
 
-    zone = sv.PolygonZone(polygon=ZONE_POLYGON, frame_resolution_wh=tuple(args.camera_resolution))
-    zone_annotator = sv.PolygonZoneAnnotator(zone=zone, color=sv.Color.red())
+    # zone = sv.PolygonZone(polygon=ZONE_POLYGON, frame_resolution_wh=tuple(args.camera_resolution))
+    # zone_annotator = sv.PolygonZoneAnnotator(zone=zone, color=sv.Color.red())
     while True:
         ret, frame = cap.read()
-        frame = zone_annotator.annotate(scene=frame)
+        # frame = zone_annotator.annotate(scene=frame)
         if not ret:
             break
         results = model(frame, stream=True)
-        frame = zone_annotator.annotate(scene=frame)
+        # frame = zone_annotator.annotate(scene=frame)
         for r in results:
             boxes = r.boxes
             for box in boxes:
@@ -82,7 +79,7 @@ def main():
                 cls = int(box.cls[0])
                 currentClass = classNames[cls]
                 # Detect an object
-                if currentClass == "car" and conf > 0.3:
+                if currentClass == "person" and conf > 0.3:
                     cvzone.putTextRect(frame,
                                        f'{currentClass} {conf}',
                                        (max(0, x1),
